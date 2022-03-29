@@ -1,0 +1,6 @@
+//loadPlugin(aScriptPath() + "uvTools/rainUVPrescale.py");
+$fullpath = "//lab5/Students/iDream-28(8-10)/scripts/rainUVPrescale.py";
+loadPlugin($fullpath);
+rainUVPrescale;
+polyMultiLayoutUV -lm 1 -sc 1 -rbf 1 -fr 0 -ps 0.1 -l 2;
+print "scale finished.\n";

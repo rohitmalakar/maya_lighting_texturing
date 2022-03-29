@@ -1,0 +1,59 @@
+/*
+/////////////////////////////////////////////////////////////rbnMatteColor.mel/////////////////////////////////////////////////////////// 
+//	Script Name:		rbnMatteColor.mel
+//	Created by:	   	    Rabindra Maharjan
+//  Created in:     	Maya 2009
+//	Date: 		    	1st oct 2012
+//	Exection:	    	Run the Script, type rbnMatteColor in command line and hit the Enter key.
+
+//  Description:        Creates Maya and Vray cmatte colors.
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+*/
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+global proc rbnVRMatte()
+	{
+	for($i=0; $i<=1;$i++)
+		for($j=0; $j<2;$j++)
+			for($k=0; $k<2;$k++)
+				{
+				shadingNode -asShader VRayLightMtl -n ("color"+$i+$j+$k);
+				string $matteShader[] = `ls -sl`;
+				setAttr ($matteShader[0] +".color") -type double3 $i $j $k;
+				setAttr ($matteShader[0]+".emitOnBackSide") 1;
+				//setAttr ($matteShader[0] +".ambientColor") -type double3 $i $j $k;
+				//setAttr ($matteShader[0] +".incandescence") -type double3 $i $j $k;
+				binMembership -addToBin "matteColor" $matteShader[0];
+				}
+    if(!`objExists "blackHole"`)
+        {
+    	string $blackHole = `shadingNode -asShader lambert -n "blackHole"`;
+    	setAttr ($blackHole + ".matteOpacityMode") 0;
+    	binMembership -addToBin "matteColor" $blackHole;
+    	}
+	}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////	
+global proc rbnMayaMatte()
+	{
+	for($i=0; $i<=1;$i++)
+		for($j=0; $j<2;$j++)
+			for($k=0; $k<2;$k++)
+				{
+				shadingNode -asShader lambert -n ("color"+$i+$j+$k);
+				string $matteShader[] = `ls -sl`;
+				setAttr ($matteShader[0] +".color") -type double3 $i $j $k  ;
+				setAttr ($matteShader[0] +".ambientColor") -type double3 $i $j $k;
+				setAttr ($matteShader[0] +".incandescence") -type double3 $i $j $k;
+				binMembership -addToBin "matteColor" $matteShader[0];
+				}
+    if(!`objExists "blackHole"`)
+        {
+    	string $blackHole = `shadingNode -asShader lambert -n "blackHole"`;
+    	setAttr ($blackHole + ".matteOpacityMode") 0;
+    	binMembership -addToBin "matteColor" $blackHole;
+    	}
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////

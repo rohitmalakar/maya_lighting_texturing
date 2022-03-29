@@ -1,0 +1,30 @@
+/*
+/////////////////////////////////////////////////////////////rbnCreateLightPass.mel/////////////////////////////////////////////////////////// 
+//	Script Name:		rbnCreateLightPass.mel
+//	Created by:	   	    Rabindra Maharjan
+//  Created in:     	Maya 2009
+//	Date: 		    	1st oct 2012
+//	Exection:	    	Run the Script, type rbnCreateLightPass in command line and hit the Enter key.
+//
+//	Description:        Creates the light select passes with all the necesary connections.		
+//				        Simply select the lights and execute scripts.
+//				        It works with group node(light groups only ) as well where all the similer lights can be renders as single lighti pass. 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+*/
+
+global proc rbnCreateLightPass()
+    {
+    string $lightSelect[] = `ls -sl`;
+    if(size($lightSelect)==0)
+        headsUpMessage "PLEASE SELECT AT LEASE SINGLE LIGHT TO CREATE VRAY LIGHT SELECT PASS";
+    else
+        {
+        for($light in $lightSelect)
+            {
+            string $lightSelNode = `vrayAddRenderElement LightSelectElement`;
+            string $newName = `rename  $lightSelNode ("LS_"+$light)`;
+            setAttr -type "string" ($newName +".vray_name_lightselect") ($newName);
+            sets -edit -forceElement $newName $light;
+            }
+        }
+    }

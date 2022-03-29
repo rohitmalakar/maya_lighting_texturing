@@ -1,0 +1,89 @@
+/*
+/////////////////////////////////////////////////////////////rbnShaderRenamer v.01.mel/////////////////////////////////////////////////////////// 
+//	Script Name:		rbnShaderRenamer v.01.mel
+//	Created by:	   	    Rabindra Maharjan
+//  Created in:     	Maya 2009
+//	Date: 		    	1st oct 2012
+//	Exection:	    	Run the Script, type rbnShaderRenamer in command line and hit the Enter key.
+//
+//	Description:		-It is a simple tool that yields to rename all the past history of shaders in the scene.
+//				        -It takes file name from the fileTexture as a key name.
+//				
+//				        for Eg:
+//				        -If your textureFileName is "abcProject_hari_skin_dif.jpg" then key name will be "abcProject_hari_skin".
+//				        while renaming lambert10 shader where "abcProject_hari_skin_dif.jpg" is connected to color attribute it results 
+//				        "abcProject_hari_skin_lambert"
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+*/
+
+
+global proc rbnShaderRenamer()
+	{
+    string $readOnlyNode[] = {"lambert1" ,"particleCloud1"};
+    string $allShader[] = {};
+    string $nodeType, $path = "";
+    string $fileName = "";
+    string $sdList[] = `ls -mat`;
+    string $slList[] = `ls -sl`;
+        if(size($slList)==0)
+            for($sd in $sdList)
+                $allShader[size($allShader)] = $sd;
+        else
+            for($sl in $slList)
+                if(stringArrayContains($sl, $sdList))
+                    $allShader[size($allShader)] = $sl;
+    string $allShader[] = stringArrayRemove ($readOnlyNode,$allShader);
+    for($shader in $allShader)
+        {
+        if(`objExists $shader` == 1)
+            {
+            string $shaderHistory[] = `listHistory $shader`;
+            if(size(`listConnections -type "shadingEngine" $shader`))
+                {
+                string $sg[] = `listConnections -type "shadingEngine" $shader`;
+                $shaderHistory[size($shaderHistory)] = $sg[0];
+                }
+			
+            for($his in $shaderHistory)
+                {
+                if(`nodeType $his` == "file")
+                    {
+                    string $buffer[];
+                    string $path = `getAttr ($his+".fileTextureName")`;
+                    $path = (string)`match "[^/\\]*$" $path`;
+                    tokenize $path  "_" $buffer;
+                    int $i=0;
+                    $fileName = $buffer[$i];
+                    for($i=1; $i<=(size($buffer)-2);$i++)
+                        {
+                        $fileName = ($fileName+"_"+$buffer[$i]);
+                        }
+                    }
+                }
+            
+            if(size($fileName) == 0)
+                    {
+                    string $sg[] = `listConnections -type "shadingEngine" $shader`;                    
+                    string $meshName[] = `listConnections -type "shape" $sg[0]`;
+                    $fileName = $meshName[0];
+                    }                          
+    
+            for($his in $shaderHistory)
+                {
+                if(stringArrayContains($his, $allShader))
+                    $nodeType = "SD";
+                else if(`nodeType $his` == "shadingEngine")
+                    $nodeType = "SG";
+                else if(`nodeType $his` == "place2dTexture")
+                    $nodeType = "P2dT";
+    				else
+                    $nodeType = `nodeType $his`;
+    
+                rename $his  ($fileName+ "_" +$nodeType);
+                string $allShader[] = stringArrayRemove ($shaderHistory,$allShader);
+                }
+            $fileName = "";
+            }
+        }
+    }

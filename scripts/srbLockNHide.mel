@@ -1,0 +1,108 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Title: srbLockNHide.mel
+//AUTHOR:	Suchan Raj Bajracharya
+//				suchan@incessantrain.com		
+//DATE: 22nd, Dec, 2008
+//VERSION: 0.1
+//DESCRIPTION: Use this Tool to lock and hide keyable attributes of selected objects...
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//CREATE THE GLOBAL PROCEDURE FOR LOCKING AND HIDING---
+global proc srbLockNHide()
+{
+//CREATE THE WINDOW---
+if (`window -exists srbLockNHideWin`) deleteUI srbLockNHideWin;
+window 
+-title "SRB - Lock N Hide v0.1"
+-rtf 1
+srbLockNHideWin;
+
+columnLayout -adj 1;
+
+//CREATE THE CHECK BOXES---
+checkBox -l "Translate" -value 1 srbTranslateCB;
+checkBox -l "Rotate" -value 1 srbRotateCB; 
+checkBox -l "Scale" -value 1 srbScaleCB; 	
+checkBox -l "Visibility" -value 1 srbVisibilityCB; 	
+
+separator -h 15;
+button -l "Apply" -c "srbLockNHideProc";
+
+showWindow srbLockNHideWin;
+}	
+
+//CREATE THE GLOBAL PROCEDURE FOR EXECUTING THE LOCKING AND HIDING FEATURE---
+global proc srbLockNHideProc()
+{
+//STORE THE LISTED OBJECTS---
+string $sel[] = `ls -sl`;
+
+//QUERY AND STORE SOME VARIABLES---
+int $srbTransQuery = `checkBox -query -value srbTranslateCB`;
+int $srbRotQuery = `checkBox -query -value srbRotateCB`;
+int $srbScaleQuery = `checkBox -query -value srbScaleCB`;
+int $srbVisQuery = `checkBox -query -value srbVisibilityCB`;
+
+//ERROR CHECKING---
+int $noSel = `size($sel)`;
+if ($noSel == 0)
+{
+warning "Select atleast one object to execute the command...\n";	
+}	
+else
+{
+for ( $obj in $sel ) {
+//LOCK N HIDE TRANSLATION---	
+if ($srbTransQuery == 1)
+{
+setAttr -lock true -keyable false ($obj + ".tx");
+setAttr -lock true -keyable false ($obj + ".ty");
+setAttr -lock true -keyable false ($obj + ".tz");
+} 
+else 
+{ 
+setAttr -lock false -keyable true ($obj + ".tx");
+setAttr -lock false -keyable true ($obj + ".ty");
+setAttr -lock false -keyable true ($obj + ".tz");}
+
+//LOCK N HIDE ROTATION---	
+if ($srbRotQuery == 1)
+{
+setAttr -lock true -keyable false ($obj + ".rx");
+setAttr -lock true -keyable false ($obj + ".ry");
+setAttr -lock true -keyable false ($obj + ".rz");
+} 
+else 
+{ 
+setAttr -lock false -keyable true ($obj + ".rx");
+setAttr -lock false -keyable true ($obj + ".ry");
+setAttr -lock false -keyable true ($obj + ".rz");}
+
+//LOCK N HIDE SCALE---	
+if ($srbScaleQuery == 1)
+{
+setAttr -lock true -keyable false ($obj + ".sx");
+setAttr -lock true -keyable false ($obj + ".sy");
+setAttr -lock true -keyable false ($obj + ".sz");
+} 
+else 
+{ 
+setAttr -lock false -keyable true ($obj + ".sx");
+setAttr -lock false -keyable true ($obj + ".sy");
+setAttr -lock false -keyable true ($obj + ".sz");}
+
+//LOCK N HIDE VISIBILITY---	
+if ($srbVisQuery == 1)
+{
+setAttr -lock true -keyable false ($obj + ".v");
+setAttr -lock true -keyable false ($obj + ".v");
+setAttr -lock true -keyable false ($obj + ".v");
+} 
+else 
+{ 
+setAttr -lock false -keyable true ($obj + ".v");
+setAttr -lock false -keyable true ($obj + ".v");
+setAttr -lock false -keyable true ($obj + ".v");
+};};
+print "Locked N hided attributes on selected objects...\n";
+};}
