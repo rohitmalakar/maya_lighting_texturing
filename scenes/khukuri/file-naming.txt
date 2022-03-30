@@ -1,0 +1,3 @@
+rohit_projectname_uv.mb
+rohit_projectname_uv.png (snapshoot of uv)
+rohit_projectname_uv_render.png (rendered snapshoot)
